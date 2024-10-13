@@ -3,7 +3,7 @@ import { Component, HostListener, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { BreadcumbComponent } from '../breadcrumb/breadcrumb.component';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../../../Angular18Tutorial/src/app/services/auth.service';
 
 
 

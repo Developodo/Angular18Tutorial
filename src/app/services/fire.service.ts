@@ -25,9 +25,6 @@ export class FireService {
   items!: Observable<any[]>;
 
 
-  /*DB:any = inject(AngularFireDatabase);
-  recipesDB: AngularFireList<any> | any;*/
-
   constructor(
     private authService: AuthService
   ) { 
@@ -40,23 +37,20 @@ export class FireService {
    deleteRecipe(id: string): Promise<void> {
     return this.itemsCollection.doc(id).delete();
    }
-   updateRecipe(recipe: Recipe): Promise<void> {
+   /*updateRecipe(recipe: Recipe): Promise<void> {
     return this.itemsCollection.doc(recipe.idMeal).update(recipe);
-   }  
+   } */ 
    getRecipes(): Observable<any> {
-    return this.items.pipe(
-      map((recipes: Recipe[]) => ({
-        meals: recipes.map(recipe => ({
-          ...recipe,
-          idMeal: recipe.idMeal // Asegúrate de que el idMeal esté presente
-        }))
-      }))
+    return this.itemsCollection.snapshotChanges().pipe(
+      map((actions:any) => {
+        return {
+          meals: actions.map((a:any) => {
+            const data = a.payload.doc.data() as Recipe;
+            const idMeal = a.payload.doc.id; // Obtener el ID del documento
+            return { idMeal, ...data }; // Devolver el ID junto con los datos
+          })
+        };
+      })
     );
-   }
-   getRecipeById(id: string): Observable<any> {
-    return this.itemsCollection.doc(id).valueChanges().pipe(map(recipe => ({
-      ...recipe,
-      idMeal: recipe.idMeal // Asegúrate de que el idMeal esté presente
-    })))
    }
 }

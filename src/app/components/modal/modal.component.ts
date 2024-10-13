@@ -2,7 +2,8 @@ import { CommonModule} from '@angular/common';
 import  {ReactiveFormsModule, FormBuilder, FormGroup, FormsModule,FormControl
   , FormArray,Validators
 } from '@angular/forms'
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, inject, Input, Output, ViewChild } from '@angular/core';
+import { FireService } from '../../services/fire.service';
 
 @Component({
   selector: 'app-modal',
@@ -16,13 +17,8 @@ export class ModalComponent {
   @Output() onclose = new EventEmitter<any>();
 
   profileForm!: FormGroup;
-  imageSourceControl = new FormControl(''); // Control para la fuente de la imagen
-  imageData: string | null = null; // Almacena el string de la imagen
-  isCameraActive = false; // Para controlar si la cámara está activa
+  fire = inject(FireService);
 
-  @ViewChild('fileInput') fileInput!: ElementRef;
-  @ViewChild('videoElement', { static: false }) videoElement!: ElementRef<HTMLVideoElement>; // Elemento video
-  @ViewChild('canvasElement', { static: false }) canvasElement!: ElementRef<HTMLCanvasElement>; // Elemento canvas
 
  
 
@@ -36,86 +32,17 @@ export class ModalComponent {
     });
   }
 
-  onSourceChange(event: Event) {
-    const source = (event.target as HTMLSelectElement).value;
-    this.imageSourceControl.setValue(source);
 
-    if (source === 'camera') {
-      this.openCamera();
-    } else if (source === 'explorer') {
-      this.fileInput.nativeElement.click();
-      this.stopCamera(); // Asegúrate de detener la cámara si se elige el explorador
-    }
-  }
 
-  openCamera() {
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then((stream) => {
-        this.isCameraActive = true;
-        const video = this.videoElement.nativeElement;
-        video.srcObject = stream;
-        video.play();
-      })
-      .catch((error) => {
-        console.error("Error al acceder a la cámara:", error);
-      });
-  }
-
-  capturePhoto() {
-    if (!this.canvasElement || !this.videoElement) {
-      console.error('Los elementos de video o canvas no están disponibles.');
-      return;
-    }
-
-    const canvas = this.canvasElement.nativeElement;
-    const video = this.videoElement.nativeElement;
-
-    canvas.width = video.videoWidth; // Ajustar el ancho
-    canvas.height = video.videoHeight; // Ajustar la altura
-
-    const context = canvas.getContext('2d');
-    context?.drawImage(video, 0, 0, canvas.width, canvas.height); // Tomar la foto
-
-    // Convertir la imagen a Data URL y guardarla como string
-    this.imageData = canvas.toDataURL('image/png');
-    this.stopCamera(); // Detener la cámara después de tomar la foto
-
-    // Guardar el string en el control del formulario
-    this.profileForm.get('strMealThumb')?.setValue(this.imageData);
-  }
-
-  stopCamera() {
-    if (this.videoElement.nativeElement.srcObject) {
-      const stream = this.videoElement.nativeElement.srcObject as MediaStream;
-      const tracks = stream.getTracks();
-      tracks.forEach(track => track.stop()); // Detener todos los tracks
-      this.videoElement.nativeElement.srcObject = null; // Limpiar el srcObject
-      this.isCameraActive = false; // Actualizar estado
-    }
-  }
-
-  onFileSelected(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imageData = reader.result as string; // Guardar el string de la imagen
-        this.profileForm.get('strMealThumb')?.setValue(this.imageData); // Guardar el string en el control del formulario
-        this.stopCamera(); // Asegúrate de detener la cámara si se selecciona una foto
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  clearImage() {
-    this.imageData = null; // Limpiar la imagen
-    this.fileInput.nativeElement.value = ''; // Resetear el input
-  }
+  
 
   onSubmit() {
     if (this.profileForm.valid) {
       // Procesar el formulario
       console.log(this.profileForm.value);
+      this.fire.createRecipe(this.profileForm.value);
+      this.profileForm.reset();
+      this.onclose.emit(null);
     }
   }
 
