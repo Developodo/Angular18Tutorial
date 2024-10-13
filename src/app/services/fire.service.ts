@@ -1,10 +1,14 @@
 import { inject, Injectable } from '@angular/core';
+
+import { AngularFirestore, AngularFirestoreCollection,DocumentReference } from '@angular/fire/compat/firestore';
+import { map, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
-import { Firestore, collection, addDoc, collectionData, getDocs,doc,query, orderBy } from '@angular/fire/firestore';
+
+
 
 
 interface Recipe {
-  id?: string;
+  idMeal?: string;
   strMeal: string;
   strMealThumb: string;
   strInstructions: string;
@@ -16,7 +20,9 @@ interface Recipe {
   providedIn: 'root'
 })
 export class FireService {
-  private firestore = inject(Firestore);
+  private firestore = inject(AngularFirestore);
+  private itemsCollection: AngularFirestoreCollection<any>;
+  items!: Observable<any[]>;
 
 
   /*DB:any = inject(AngularFireDatabase);
@@ -25,66 +31,32 @@ export class FireService {
   constructor(
     private authService: AuthService
   ) { 
-    
+    this.itemsCollection = this.firestore.collection<any>(`users/${this.authService.getUserId()}/recipes`);
+    this.items = this.itemsCollection.valueChanges();
   }
-   async createRecipe(recipe: Recipe={id:"0",strMeal:"",strMealThumb:"",strInstructions:"",strYoutube:"",strIngredient:""}): Promise<any> {
-
-    const usersRef = collection(this.firestore, 'users');
-    const newChat = await addDoc(usersRef, {
-      participants: 89,
-      lastMessage: '',
-      lastMessageTimestamp: 89,
-    });
-
-    /*console.log(this.firestore.app.options)
-    const itemsCollection = collection(this.firestore, '/users');
-    const items$ = collectionData(itemsCollection);
-    items$.subscribe((data:any) => console.log(data), (error:any) => console.log(error));*/
-    //addDoc(itemsCollection, recipe);
-    
-    //ref.valueChanges().subscribe(console.log)
-    /*firebase.initializeApp(environment.firebaseConfig);
-    const dbref= firebase.database().ref('/test');
-    console.log(dbref);
-    
-    dbref.push({test:"hola"});*/
-
-        /*firebase.initializeApp(environment.firebaseConfig);
-        firebase.firestore().settings({
-           experimentalForceLongPolling: true } 
-        )
-        console.log(firebase.firestore().collection('users'))*/
-        //console.log(this.userCollection);
-        //firebase.firestore().collection('users').add(recipe);
-       
-        /*if (this.authService.getUserId()) {
-          return addDoc(recipesCollection, recipe);
-        } else {
-          throw new Error('User not authenticated');
-        }*/
-       return null;
-  }
-/*
-  getUserRecipes(): Observable<Recipe[]> {
-        if (this.authService.getUserId()) {
-          return collectionData<any>(this.userCollection);
-        } else {
-          return of([]);
-        }
-
-  }
-  updateRecipe(recipeReference: any, recipe: Recipe): Promise<any> {
-        if (this.authService.getUserId()) {
-          return updateDoc(recipeReference, recipe);
-        } else {
-          throw new Error('User not authenticated');
-        }
-  }
-  deleteRecipe(recipeReference: any): Promise<any> {
-    if (this.authService.getUserId()) {
-      return deleteDoc(recipeReference);
-    } else {
-      throw new Error('User not authenticated');
-    }
-  }*/
+   createRecipe(recipe: Recipe={strMeal:"",strMealThumb:"",strInstructions:"",strYoutube:"",strIngredient:""}): Promise<DocumentReference<any>> {
+    return this.itemsCollection.add(recipe);
+   }
+   deleteRecipe(id: string): Promise<void> {
+    return this.itemsCollection.doc(id).delete();
+   }
+   updateRecipe(recipe: Recipe): Promise<void> {
+    return this.itemsCollection.doc(recipe.idMeal).update(recipe);
+   }  
+   getRecipes(): Observable<any> {
+    return this.items.pipe(
+      map((recipes: Recipe[]) => ({
+        meals: recipes.map(recipe => ({
+          ...recipe,
+          idMeal: recipe.idMeal // Asegúrate de que el idMeal esté presente
+        }))
+      }))
+    );
+   }
+   getRecipeById(id: string): Observable<any> {
+    return this.itemsCollection.doc(id).valueChanges().pipe(map(recipe => ({
+      ...recipe,
+      idMeal: recipe.idMeal // Asegúrate de que el idMeal esté presente
+    })))
+   }
 }

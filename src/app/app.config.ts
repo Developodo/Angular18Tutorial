@@ -20,7 +20,7 @@ export const appConfig: ApplicationConfig = {
      { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig },
      {
       provide: USE_FIRESTORE_SETTINGS,
-      useValue: { experimentalForceLongPolling: true,ignoreUndefinedProperties: true},
+      useValue: { experimentalForceLongPolling: true,ignoreUndefinedProperties: true,useFetchStreams: false,},
     },
      //importProvidersFrom(AngularFireModule.initializeApp(environment.firebaseConfig)),importProvidersFrom(AngularFireAuth),
      provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),

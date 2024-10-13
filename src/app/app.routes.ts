@@ -10,11 +10,11 @@ export const routes: Routes = [
     },
     {
         path: 'login',
-        loadComponent: () => import('./pages/login/login.component').then((m) => m.LoginComponent),
+        loadComponent: () => import('../app/pages/login/login.component').then((m) => m.LoginComponent),
     },
     {
         path: 'home/:type',
-        loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
+        loadComponent: () => import('../app/pages/home/home.component').then((m) => m.HomeComponent),
         canActivate: [authGuard],
     },
     {
@@ -24,17 +24,17 @@ export const routes: Routes = [
     },
     {
         path: 'recipes/:type/:ingredient',
-        loadComponent: () => import('./pages/list-recipes/list-recipes.component').then((m) => m.ListRecipesComponent),
+        loadComponent: () => import('../app/pages/list-recipes/list-recipes.component').then((m) => m.ListRecipesComponent),
         canActivate: [authGuard],
     },
     {
         path: 'recipes/favorites',
-        loadComponent: () => import('./pages/list-recipes/list-recipes.component').then((m) => m.ListRecipesComponent),
+        loadComponent: () => import('../app/pages/list-recipes/list-recipes.component').then((m) => m.ListRecipesComponent),
         canActivate: [authGuard],
     },
     {
         path: 'recipe/:id',
-        loadComponent: () => import('./pages/view-recipe/view-recipe.component').then((m) => m.ViewRecipeComponent),
+        loadComponent: () => import('../app/pages/view-recipe/view-recipe.component').then((m) => m.ViewRecipeComponent),
         canActivate: [authGuard],
     },
     {
