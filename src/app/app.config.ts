@@ -3,9 +3,11 @@ import { provideRouter, withComponentInputBinding} from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment.development';
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFireStorageModule } from '@angular/fire/compat/storage';
+import {  FIREBASE_OPTIONS} from '@angular/fire/compat';
+import { SETTINGS as USE_FIRESTORE_SETTINGS, } from '@angular/fire/compat/firestore'
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideAuth, getAuth } from '@angular/fire/auth';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,8 +17,15 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
      ),
      provideHttpClient(),
-     importProvidersFrom(AngularFireModule.initializeApp(environment.firebaseConfig)),
-     importProvidersFrom(AngularFireAuth),
-     importProvidersFrom(AngularFireStorageModule) 
+     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig },
+     {
+      provide: USE_FIRESTORE_SETTINGS,
+      useValue: { experimentalForceLongPolling: true,ignoreUndefinedProperties: true},
+    },
+     //importProvidersFrom(AngularFireModule.initializeApp(environment.firebaseConfig)),importProvidersFrom(AngularFireAuth),
+     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+     provideFirestore(() => getFirestore()),
+     provideAuth(() => getAuth()),
+     
     ]
 };

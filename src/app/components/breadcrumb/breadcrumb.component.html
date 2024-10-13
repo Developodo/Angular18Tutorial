@@ -1,0 +1,31 @@
+<div class="bg-gray-100 p-4">
+    <nav class="flex" aria-label="Breadcrumb">
+        <!-- Home Link -->
+        <div class="flex items-center">
+            <a [routerLink]="home.routerLink" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <svg class="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                {{ home.label }}
+            </a>
+        </div>
+        
+        <!-- Path Links -->
+        <ol class="flex items-center space-x-4">
+            <li *ngFor="let item of path; let last = last">
+                <div class="flex items-center">
+                    &nbsp;&nbsp;>
+                    @if(item.routerLink){
+
+<a [routerLink]="item.routerLink" class="ml-4 text-blue-600 hover:text-blue-800">
+                        {{ item.label }}
+                    </a>
+                    }@else{
+                        {{ item.label }}
+                    }
+                </div>
+            </li>
+        </ol>
+    </nav>
+</div>
+

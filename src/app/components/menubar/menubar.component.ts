@@ -2,11 +2,12 @@ import { CommonModule, NgClass } from '@angular/common';
 import { Component, HostListener, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { BreadcumbComponent } from '../breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-menubar',
   standalone: true,
-  imports: [NgClass,CommonModule,RouterLink,RouterLinkActive],
+  imports: [NgClass,CommonModule,RouterLink,RouterLinkActive,BreadcumbComponent],
   templateUrl: './menubar.component.html',
   styleUrl: './menubar.component.css'
 })

@@ -23,6 +23,7 @@ export class ApiService {
     return this.http.get(environment.api.listByCountry+country);
   }
   getRecipeById(id:string){
+    console.log(environment.api.viewRecipe+id)
     return this.http.get(environment.api.viewRecipe+id);
   }
 }

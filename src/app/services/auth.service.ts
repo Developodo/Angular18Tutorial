@@ -25,11 +25,12 @@ export class AuthService {
         this.userData = user as any;
         localStorage.setItem('user', JSON.stringify(this.userData));
         JSON.parse(localStorage.getItem('user')!);
-        //router.navigate(['']);
+        if(router.url === '/login')
+          router.navigate(['/home']);
       } else {
         localStorage.setItem('user', 'null');
         this.userData=null;
-        //router.navigate(['login']);
+        router.navigate(['login']);
       }
     });
   }
@@ -54,12 +55,16 @@ export class AuthService {
 
   get isLoggedIn(): boolean {
     //only for testing
-    return true;
+    //return true;
          if(this.userData === null && this.firstAttempt){
             this.firstAttempt = false;
             this.userData = JSON.parse(localStorage.getItem('user')!);
          }
          const user = this.userData;
          return user !== null && user?.emailVerified !== false ? true : false;
+  }
+
+  public getUserId(){
+    return this.userData?.uid;
   }
 }

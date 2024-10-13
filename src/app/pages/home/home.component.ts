@@ -2,6 +2,7 @@ import { Component, inject, Input, signal, WritableSignal } from '@angular/core'
 import { ApiService } from '../../services/api.service';
 import { Router } from '@angular/router';
 import { JsonPipe } from '@angular/common';
+import { BreadcumbService } from '../../services/breadcrumb.service';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +14,7 @@ import { JsonPipe } from '@angular/common';
 export class HomeComponent {
   apiS = inject(ApiService);
   router = inject(Router);
+  bcService = inject(BreadcumbService);
 
   $state:WritableSignal<any>=signal({
     type: 'category',
@@ -26,9 +28,19 @@ export class HomeComponent {
     let request;
     switch (type) {
       case 'country':
+        this.bcService.change = {
+          level: 0,
+          label: 'Países',
+          routerLink: '/home/country'
+        }
         request = this.apiS.getCountries();
         break;
       default:
+        this.bcService.change = {
+          level: 0,
+          label: 'Categorías',
+          routerLink: '/home/category'
+        }
         request = this.apiS.getCategories();
     }
 
@@ -51,6 +63,8 @@ export class HomeComponent {
     })
   }
 
+ 
+ 
   async  listRecipes(ingredient: string) {
     await this.router.navigate(['recipes', this.$state().type, ingredient]);
   }

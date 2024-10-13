@@ -5,7 +5,7 @@ export const environment = {
         nationalities: 'https://www.themealdb.com/api/json/v1/1/list.php?a=list',
         listByCategory: 'https://www.themealdb.com/api/json/v1/1/filter.php?c=',
         listByCountry: 'https://www.themealdb.com/api/json/v1/1/filter.php?a=',
-        viewRecipe:'www.themealdb.com/api/json/v1/1/lookup.php?i='
+        viewRecipe:'https://www.themealdb.com/api/json/v1/1/lookup.php?i='
     },
     firebaseConfig : {
         apiKey: "AIzaSyCZNnB_-XBz6GqPhw0bK-IJh-lzC296UUY",
